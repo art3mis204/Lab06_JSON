@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+
+        #details {
+            margin-top: 20px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+
+        #message {
+            margin-top: 20px;
+            color: #b00020;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Records</h1>
+
+    <label for="bookSelect">Select a book title:</label>
+    <select id="bookSelect">
+        <option value="">-- Choose a book --</option>
+    </select>
+
+    <p id="message"></p>
+
+    <div id="details">
+        <p><strong>Title:</strong> <span id="title"></span></p>
+        <p><strong>Author:</strong> <span id="author"></span></p>
+        <p><strong>Publication Year:</strong> <span id="year"></span></p>
+        <p><strong>Genres:</strong> <span id="genres"></span></p>
+    </div>
+
+    <script>
+        // TODO: replace YOUR-USERNAME and YOUR-REPO with your own GitHub details
+        const jsonUrl = "https://raw.githubusercontent.com/art3mis204/Lab06_JSON/main/books.json";
+
+        const select = document.getElementById("bookSelect");
+        const details = document.getElementById("details");
+        const message = document.getElementById("message");
+        let books = [];
+
+        // Fetch the JSON data from GitHub
+        fetch(jsonUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                books = data.Books;
+
+                // Fill the select element with the book titles
+                books.forEach(book => {
+                    const option = document.createElement("option");
+                    option.value = book.title;
+                    option.textContent = book.title;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Failed to load books:", error);
+                alert("Could not load book data. Check the GitHub URL.");
+            });
+
+        // Find the matching book when the user selects a title
+        select.addEventListener("change", () => {
+            const selected = books.find(book => book.title === select.value);
+
+            if (selected) {
+                document.getElementById("title").textContent = selected.title;
+                document.getElementById("author").textContent = selected.author;
+                document.getElementById("year").textContent = selected.publicationYear;
+                document.getElementById("genres").textContent = selected.genres.join(", ");
+                details.style.display = "block";
+                message.textContent = "";
+            } else {
+                details.style.display = "none";
+                message.textContent = "Book not found. Please select a valid book title.";
+            }
+        });
+    </script>
+</body>
+</html>
